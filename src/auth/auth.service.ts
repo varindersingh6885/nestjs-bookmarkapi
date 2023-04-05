@@ -15,19 +15,21 @@ export class AuthService {
 
   async signup(dto: AuthDto) {
     // hash the user password
-    const hash = await argon.hash(dto.password);
+    const passwordHash = await argon.hash(dto.password);
 
     // create new user in db
     try {
       const user = await this.prismaService.user.create({
         data: {
           email: dto.email,
-          hash,
+          hash: passwordHash,
         },
       });
-      delete user.hash;
+
+      // delete user.hash;
+      const { hash, ...userResponse } = user;
       // return the user
-      return user;
+      return userResponse;
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ForbiddenException('Credentials aleady exists in database');

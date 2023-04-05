@@ -9,7 +9,7 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { id: userReq.userId },
     });
-    delete user.hash;
-    return user;
+    const { hash, ...userRes } = user;
+    return userRes;
   }
 }
